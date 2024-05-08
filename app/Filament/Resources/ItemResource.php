@@ -8,6 +8,7 @@ use App\Models\Item;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -53,18 +54,37 @@ class ItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('img')
-                    ->square(),
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\ImageColumn::make('img')
+                        ->square()
+                        ->size(120),
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\TextColumn::make('name')
+                            ->searchable(),
+                        Tables\Columns\TextColumn::make('description')
+                            ->limit(30)
+                            ->searchable()
+                            ->visibleFrom('md'),
+                    ]),
+                    Tables\Columns\TextColumn::make('count')
+                        ->suffix(' шт.'),
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\TextColumn::make('purchase_price')
+                            ->money('rub'),
+                        Tables\Columns\TextColumn::make('recommended_price')
+                            ->money('rub'),
+                    ]),
+
+                ])
+
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -72,6 +92,7 @@ class ItemResource extends Resource
                 ]),
             ]);
     }
+
 
     public static function getRelations(): array
     {
@@ -86,6 +107,7 @@ class ItemResource extends Resource
             'index' => Pages\ListItems::route('/'),
             'create' => Pages\CreateItem::route('/create'),
             'edit' => Pages\EditItem::route('/{record}/edit'),
+            'view' => Pages\ViewItem::route('/{record}'),
         ];
     }
 }
