@@ -15,6 +15,9 @@ return new class extends Migration {
             $table->string('name')->unique();
             $table->string('description')->nullable();
 
+            $table->unsignedBigInteger('category_id'); // Создаем колонку для внешнего ключа
+
+            // Определяем внешний ключ
             $table->foreign('category_id')->references('id')->on('categories');
 
             $table->string('img')->nullable();

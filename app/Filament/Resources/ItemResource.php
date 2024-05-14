@@ -31,6 +31,11 @@ class ItemResource extends Resource
                     ->maxLength(30),
                 Forms\Components\TextInput::make('description')
                     ->maxLength(255),
+                Forms\Components\Select::make('category_id')
+                    ->relationship('category', 'title')
+                    ->searchable()
+                    ->preload()
+                    ->required(),   
                 FileUpload::make('img')
                     ->directory('item-attachments')
                     ->image()
@@ -61,7 +66,7 @@ class ItemResource extends Resource
                     Tables\Columns\Layout\Stack::make([
                         Tables\Columns\TextColumn::make('name')
                             ->searchable(),
-                        Tables\Columns\TextColumn::make('description')
+                        Tables\Columns\TextColumn::make('category.title')
                             ->limit(30)
                             ->searchable()
                             ->visibleFrom('md'),
